@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
-import { lazy, useEffect, useRef, useState } from "react";
-// import spiderman from "../../public/spiderman1.jpg";
+import { useEffect, useRef, useState } from "react";
+import githubIcon from "../../public/github-icon.svg";
 
 
 export default function Home() {
@@ -55,6 +55,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className="container-fluid bg-secondary-subtle p-4 d-xl-flex justify-content-center align-items-center fixed-top">
+        <div>
+        <a href="https://github.com/Nandakishore695/nextJs-SearchHimage"><Image src={githubIcon} alt="gitHub Nandakishore695" width={70}/></a>
+        </div>
         <div>
           <p className="text-black fw-bold mx-xl-4 fs-1 text-center ">Search<span className="text-success">Himages</span></p>
         </div>
