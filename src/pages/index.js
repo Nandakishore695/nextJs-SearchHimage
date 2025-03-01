@@ -5,17 +5,19 @@ import githubIcon from "../../public/github-icon.svg";
 
 
 export default function Home() {
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
   const [apiData, setApiData] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectImage, setSelectImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imageTitleName, setImageTitleName] = useState(null);
   const inputRef = useRef(null);
   const gitHubUrl = "https://nandakishore695.github.io/host_api/search_image.json";
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 
   useEffect(() => {
     imageSearchApiCall();
     inputRef.current.focus();
-  }, [])
+  }, []);
 
   const imageSearchApiCall = async () => {
     try {
@@ -37,13 +39,30 @@ export default function Home() {
     setFilteredUsers(filterResult);
   }
 
-  const handleUploadImage = () => {
-    console.log(URL.createObjectURL(selectImage));
+  const handleSelectedFile = (event) => {
+    const imageFileGetting = event.target.files[0];
+    if (!ALLOWED_TYPES.includes(imageFileGetting.type)) {
+      alert(`${imageFileGetting.type}is not a valid format. Allowed formats: JPG, PNG, WebP, AVIF.`)
+    }
+    else {
+      const generateUrl = URL.createObjectURL(imageFileGetting);
+      setImageFile(generateUrl);
+    }
   }
 
-  const handleSelectedFile = (event) => {
-    const imageFile = event.target.files[0];
-    setSelectImage(imageFile);
+  const handleImageTitile = (event) => {
+    const titleName = event.target.value;
+    setImageTitleName(titleName);
+  }
+
+  const handleUploadImage = () => {
+    const isNewValue = [...apiData, { imageUrl: imageFile, name: imageTitleName }];
+    setApiData(isNewValue);
+    setFilteredUsers(isNewValue);
+    setImageTitleName("");
+    setImageFile(null);
+    console.log(apiData);
+    
   }
 
   return (
@@ -56,7 +75,7 @@ export default function Home() {
       </Head>
       <header className="container-fluid bg-secondary-subtle p-4 d-xl-flex justify-content-center align-items-center fixed-top">
         <div>
-        <a href="https://github.com/Nandakishore695/nextJs-SearchHimage"><Image src={githubIcon} alt="gitHub Nandakishore695" width={70}/></a>
+          <a href="https://github.com/Nandakishore695/nextJs-SearchHimage"><Image src={githubIcon} alt="gitHub Nandakishore695" width={70} /></a>
         </div>
         <div>
           <p className="text-black fw-bold mx-xl-4 fs-1 text-center ">Search<span className="text-success">Himages</span></p>
@@ -68,24 +87,25 @@ export default function Home() {
           <input type="file" className="rounded form-control" onChange={handleSelectedFile} />
         </div>
         <div className="d-flex">
-          {selectImage && <>
-            <input className="rounded form-control " placeholder="Example: title"/>
-            <button className="bg-success border-0 rounded px-4 py-2 text-white mx-2" onClick={handleUploadImage}>Upload</button>
+          {imageFile && <>
+            <input className="rounded form-control " placeholder="Example: title" onChange={handleImageTitile} value={imageTitleName} />
+            <button className="bg-success border-0 rounded px-4 py-2 text-white mx-2" onClick={handleUploadImage} >Upload</button>
           </>}
         </div>
-      </header>
+      </header >
       <main className="container-fluid mt-5 pt-5">
-
         <div className="row m-xl-4 pt-4 mt-5">
           {filteredUsers.map((item, index) => (
             <div className="col-xl-2 col-md-4 my-1" key={index}>
               <div className="card bg-body-tertiary">
-                <Image src={item.imageUrl} className="card-img col-4" alt={item.name} width={30} height={55} layout="responsive" loading="lazy"/>
+                <Image src={item.imageUrl} className="card-img col-4" alt={item.name} width={30} height={55} layout="responsive" loading="lazy" />
                 <div className="card-img-overlay d-flex justify-content-between align-items-end">
                   <p className="card-title text-white">{item.name}</p>
                   <button className="bg-success rounded p-2 px-xl-4 border-0 text-white" >Download</button>
                 </div>
+
               </div>
+
             </div>))}
         </div>
       </main>
